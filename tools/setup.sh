@@ -4,6 +4,7 @@
 set -e
 cd "$(dirname "$0")/.."
 git submodule update --init xash3d-fwgs hlsdk-portable
+git -C hlsdk-portable submodule update --init freevgui
 cd xash3d-fwgs
 git submodule update --init 3rdparty/library_suffix 3rdparty/mainui 3rdparty/MultiEmulator 3rdparty/bzip2/bzip2
 git -C 3rdparty/mainui submodule update --init

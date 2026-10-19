@@ -24,15 +24,15 @@ uses) and applies `patches/*.patch` to them.
 
 ## ESP32-S3 build
 
-Needs ESP-IDF 5.5. `tools/idf_env.sh` uses an ESP-IDF already set up in the shell (`export.sh`),
-or else the one installed by PlatformIO (`~/.platformio`).
+Needs ESP-IDF 5.5. The scripts use an ESP-IDF already set up in the shell (its `export.sh`
+sourced), or else the one installed by PlatformIO (`~/.platformio`, see `tools/idf_env.sh`).
 
 ```sh
-. tools/idf_env.sh
-idf.py set-target esp32s3     # first time only
-idf.py build
-tools/flash.sh                # builds and flashes (PORT=/dev/cu.usbmodemXXX if several boards)
+tools/flash.sh build          # build only (the first run configures build/)
+tools/flash.sh                # build and flash (PORT=/dev/cu.usbmodemXXX if several boards)
 ```
+
+With ESP-IDF set up, `idf.py set-target esp32s3 && idf.py build flash` works as well.
 
 Game data:
 

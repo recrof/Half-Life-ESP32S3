@@ -1,7 +1,20 @@
 #!/bin/sh
 # Build and flash: tools/flash.sh   (PORT=/dev/cu.usbmodemXXX to override the port)
+# Build only: tools/flash.sh build
 cd "$(dirname "$0")/.."
 . tools/idf_env.sh
+BUILD=${BUILD:-build}
+# first build: configure (as idf.py would)
+if [ ! -f "$BUILD/build.ninja" ]; then
+    cmake -S . -B "$BUILD" -G Ninja -DIDF_TARGET=esp32s3 -DPYTHON_DEPS_CHECKED=1 > /dev/null || exit 1
+fi
+if ! ninja -C "$BUILD" > "$BUILD/ninja.log" 2>&1; then
+    grep -E "error:|undefined reference|No module|CMake Error" "$BUILD/ninja.log" | sort -u | head -30
+    echo "BUILD FAILED"
+    exit 1
+fi
+grep "binary size" "$BUILD/ninja.log"
+[ "$1" = "build" ] && exit 0
 # with several boards connected the port must be given: never guess
 if [ -z "$PORT" ]; then
     n=$(ls /dev/cu.usbmodem* 2>/dev/null | wc -l)
@@ -11,13 +24,6 @@ if [ -z "$PORT" ]; then
     fi
     PORT=$(ls /dev/cu.usbmodem*)
 fi
-BUILD=${BUILD:-build}
-if ! ninja -C "$BUILD" > "$BUILD/ninja.log" 2>&1; then
-    grep -E "error|undefined reference" "$BUILD/ninja.log" | grep -v "^/.*-c /" | sort -u | head -30
-    echo "BUILD FAILED"
-    exit 1
-fi
-grep "binary size" "$BUILD/ninja.log"
 # the serial logger must release the port (restart it afterwards)
 pkill -f serial_daemon.py && sleep 1
 cd "$BUILD"
