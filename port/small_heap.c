@@ -104,6 +104,13 @@ static void Heap_MapFlush( heapmap_t *m )
 	m->small_used = m->small_count = 0;
 }
 
+static bool Heap_MapBlock( walker_heap_into_t heap, walker_block_info_t block, void *user );
+
+static bool Heap_MapRegionBlock( void *ptr, size_t size, int used, void *user )
+{
+	return Heap_MapBlock( (walker_heap_into_t){ 0 }, (walker_block_info_t){ .ptr = ptr, .size = size, .used = used }, user );
+}
+
 static bool Heap_MapBlock( walker_heap_into_t heap, walker_block_info_t block, void *user )
 {
 	heapmap_t *m = user;
@@ -135,16 +142,24 @@ static void Heap_Map( size_t n )
 {
 	static int maps;
 	heapmap_t *m = &heapmap;
+	int big_first;
 
 	if( n < 128 * 1024 || maps++ >= 8 )
 		return;
 	memset( m, 0, sizeof( *m ));
 	heap_caps_walk( MALLOC_CAP_SPIRAM, Heap_MapBlock, m );
 	Heap_MapFlush( m );
+	big_first = m->count;
+	if( big.heap )
+		multi_heap_walk( big.heap, Heap_MapRegionBlock, m );
+	Heap_MapFlush( m );
 	printf( "HEAPMAP allocation of %u bytes failed\n", (unsigned)n );
 	for( int i = 0; i < m->count; i++ )
 	{
 		heapblock_t *b = &m->blocks[i];
+
+		if( i == big_first )
+			printf( "HEAPMAP large allocation region:\n" );
 
 		if( !b->ptr )
 			printf( "HEAPMAP %6u kB in %u small blocks\n", b->size >> 10, b->used );

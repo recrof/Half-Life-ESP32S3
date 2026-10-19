@@ -35,8 +35,9 @@
 #include "esp_input.h"
 #include "esp_console.h"
 
-// the software renderer keeps its edge and surface lists on the stack (about 256 kB)
-#define GAME_TASK_STACK_SIZE    (384 * 1024)
+// the software renderer keeps its edge and surface lists on the stack: 247 kB used at most
+// in the levels (tasks command), 384 kB left too little memory for c5a1
+#define GAME_TASK_STACK_SIZE    (320 * 1024)
 #define GAME_TASK_PRIORITY      5
 #define GAME_TASK_CORE          1
 
