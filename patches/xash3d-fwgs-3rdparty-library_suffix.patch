@@ -1,0 +1,91 @@
+diff --git a/include/build.h b/include/build.h
+index b92c51e..0cd0b40 100644
+--- a/include/build.h
++++ b/include/build.h
+@@ -76,6 +76,8 @@ Then you can use another oneliner to query all variables:
+ #undef XASH_OPENBSD
+ #undef XASH_OSX
+ #undef XASH_POSIX
++#undef XASH_ESP32
++#undef XASH_XTENSA
+ #undef XASH_PPC
+ #undef XASH_PS4
+ #undef XASH_PSP
+@@ -148,6 +150,8 @@ Then you can use another oneliner to query all variables:
+ 		#define XASH_SUNOS 1
+ 	#elif defined __gnu_hurd__
+ 		#define XASH_HURD 1
++	#elif defined ESP_PLATFORM
++		#define XASH_ESP32 1 // ESP-IDF: newlib and FreeRTOS
+ 	#else
+ 		#error
+ 	#endif
+@@ -267,6 +271,8 @@ Then you can use another oneliner to query all variables:
+ 		#define XASH_64BIT 1
+ 	#endif
+ 	#define XASH_WASM 1
++#elif defined __XTENSA__
++	#define XASH_XTENSA 1
+ #elif defined __sparc__
+ 	#define XASH_SPARC 1
+ 	#if defined __arch64__
+diff --git a/include/buildenums.h b/include/buildenums.h
+index c91f5e6..9bae840 100644
+--- a/include/buildenums.h
++++ b/include/buildenums.h
+@@ -61,6 +61,7 @@ For more information, please refer to <http://unlicense.org/>
+ #define PLATFORM_PSP        18
+ #define PLATFORM_IOS    	19
+ #define PLATFORM_PS4        20
++#define PLATFORM_ESP32      21
+ 
+ #if XASH_WIN32
+ 	#define XASH_PLATFORM PLATFORM_WIN32
+@@ -100,6 +101,8 @@ For more information, please refer to <http://unlicense.org/>
+ 	#define XASH_PLATFORM PLATFORM_PSP
+ #elif XASH_PS4
+ 	#define XASH_PLATFORM PLATFORM_PS4
++#elif XASH_ESP32
++	#define XASH_PLATFORM PLATFORM_ESP32
+ #else
+ 	#error
+ #endif
+@@ -119,6 +122,7 @@ For more information, please refer to <http://unlicense.org/>
+ #define ARCHITECTURE_PPC     9
+ #define ARCHITECTURE_WASM    10
+ #define ARCHITECTURE_SPARC   11
++#define ARCHITECTURE_XTENSA  12
+ 
+ #if XASH_AMD64
+ 	#define XASH_ARCHITECTURE ARCHITECTURE_AMD64
+@@ -138,6 +142,8 @@ For more information, please refer to <http://unlicense.org/>
+ 	#define XASH_ARCHITECTURE ARCHITECTURE_WASM
+ #elif XASH_SPARC
+ 	#define XASH_ARCHITECTURE ARCHITECTURE_SPARC
++#elif XASH_XTENSA
++	#define XASH_ARCHITECTURE ARCHITECTURE_XTENSA
+ #else
+ 	#error
+ #endif
+diff --git a/src/library_suffix.c b/src/library_suffix.c
+index 8f2b21a..b09e2ca 100644
+--- a/src/library_suffix.c
++++ b/src/library_suffix.c
+@@ -81,6 +81,8 @@ const char *Q_PlatformStringByID( const int platform )
+ 		return "psp";
+ 	case PLATFORM_PS4:
+ 		return "ps4";
++	case PLATFORM_ESP32:
++		return "esp32";
+ 	}
+ 
+ 	return "unknown";
+@@ -167,6 +169,8 @@ const char *Q_ArchitectureStringByID( int arch, unsigned int abi, int endianness
+ 		return is64 ? "wasm64" : "wasm32";
+ 	case ARCHITECTURE_SPARC:
+ 		return is64 ? "sparc64" : "sparc";
++	case ARCHITECTURE_XTENSA:
++		return "xtensa";
+ 	}
+ 
+ 	return is64 ?

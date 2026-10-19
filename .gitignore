@@ -1,0 +1,13 @@
+# build outputs
+/build/
+/build-*/
+/gen/
+/host/obj*/
+/host/hlhost*
+/sdkconfig.old
+__pycache__/
+.DS_Store
+
+# game data, logs and screenshots: Half-Life data is not redistributable
+/gamedata/
+/sweep-today.txt

@@ -1,0 +1,8 @@
+[submodule "xash3d-fwgs"]
+	path = xash3d-fwgs
+	url = https://github.com/recrof/xash3d-fwgs.git
+	branch = esp32s3
+[submodule "hlsdk-portable"]
+	path = hlsdk-portable
+	url = https://github.com/recrof/hlsdk-portable.git
+	branch = esp32s3

@@ -1,0 +1,12 @@
+xash/filesystem/android.c
+xash/filesystem/dir.c
+xash/filesystem/dll.c
+xash/filesystem/filesystem.c
+xash/filesystem/gameinfo.c
+xash/filesystem/io.c
+xash/filesystem/pak.c
+xash/filesystem/searchpath.c
+xash/filesystem/sys.c
+xash/filesystem/VFileSystem009.cpp
+xash/filesystem/wad.c
+xash/filesystem/zip.c

@@ -1,0 +1,62 @@
+diff --git a/font/BaseFontBackend.cpp b/font/BaseFontBackend.cpp
+index abf987c..1be6f28 100644
+--- a/font/BaseFontBackend.cpp
++++ b/font/BaseFontBackend.cpp
+@@ -750,7 +750,11 @@ void CBaseFont::SaveToCache( const char *filename, charRange_t *range, size_t ra
+ 
+ 
+ 			ch.ch = range[i].Character( j );
+-			GetCharABCWidths( ch.ch, ch.a, ch.b, ch.c );
++			int a, b, c;
++			GetCharABCWidths( ch.ch, a, b, c );
++			ch.a = a;
++			ch.b = b;
++			ch.c = c;
+ 
+ 			glyph_t glyph( ch.ch );
+ 			int idx = m_glyphs.Find( glyph );
+diff --git a/sdk_includes/common/cl_entity.h b/sdk_includes/common/cl_entity.h
+index 8784293..9060ca9 100644
+--- a/sdk_includes/common/cl_entity.h
++++ b/sdk_includes/common/cl_entity.h
+@@ -59,7 +59,9 @@ typedef struct
+ 
+ typedef struct cl_entity_s cl_entity_t;
+ 
++#ifndef HISTORY_MAX
+ #define HISTORY_MAX		64		// Must be power of 2
++#endif
+ #define HISTORY_MASK	( HISTORY_MAX - 1 )
+ 
+ #include "entity_state.h"
+diff --git a/sdk_includes/public/build.h b/sdk_includes/public/build.h
+index b92c51e..905715b 100644
+--- a/sdk_includes/public/build.h
++++ b/sdk_includes/public/build.h
+@@ -76,6 +76,8 @@ Then you can use another oneliner to query all variables:
+ #undef XASH_OPENBSD
+ #undef XASH_OSX
+ #undef XASH_POSIX
++#undef XASH_ESP32
++#undef XASH_XTENSA
+ #undef XASH_PPC
+ #undef XASH_PS4
+ #undef XASH_PSP
+@@ -148,6 +150,8 @@ Then you can use another oneliner to query all variables:
+ 		#define XASH_SUNOS 1
+ 	#elif defined __gnu_hurd__
+ 		#define XASH_HURD 1
++	#elif defined ESP_PLATFORM
++		#define XASH_ESP32 1 // ESP-IDF: newlib and FreeRTOS
+ 	#else
+ 		#error
+ 	#endif
+@@ -272,6 +276,8 @@ Then you can use another oneliner to query all variables:
+ 	#if defined __arch64__
+ 		#define XASH_64BIT 1
+ 	#endif
++#elif defined __XTENSA__
++	#define XASH_XTENSA 1
+ #else
+ 	#error "Place your architecture name here! If this is a mistake, try to fix conditions above and report a bug"
+ #endif

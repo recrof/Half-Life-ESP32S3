@@ -1,0 +1,15 @@
+diff --git a/fmtstr.h b/fmtstr.h
+index cfdccdc..b6ce8fc 100644
+--- a/fmtstr.h
++++ b/fmtstr.h
+@@ -66,6 +66,10 @@ public:
+ 	explicit CNumStr( uint16_t un16 ) { SetUint16( un16 ); }
+ 	explicit CNumStr( int32_t n32 )   { SetInt32( n32 ); }
+ 	explicit CNumStr( uint32_t un32 ) { SetUint32( un32 ); }
++#if defined( __XTENSA__ ) // int32_t is long
++	explicit CNumStr( int n32 )       { SetInt32( n32 ); }
++	explicit CNumStr( unsigned int un32 ) { SetUint32( un32 ); }
++#endif
+ 	explicit CNumStr( int64_t n64 )   { SetInt64( n64 ); }
+ 	explicit CNumStr( uint64_t un64 ) { SetUint64( un64 ); }
+ 	explicit CNumStr( double f )      { SetDouble( f ); }

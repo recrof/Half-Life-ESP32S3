@@ -1,0 +1,8 @@
+# 32-bit ARM Linux build environment of the host build (tools/arm32.sh): an arm64 Debian that
+# cross-compiles for armhf and runs the binary with qemu user mode (Apple Silicon has no AArch32)
+FROM docker.io/library/debian:bookworm
+RUN dpkg --add-architecture armhf && apt-get update && apt-get install -y --no-install-recommends \
+	crossbuild-essential-armhf libsdl2-dev:armhf qemu-user make python3 pkg-config procps \
+	&& rm -rf /var/lib/apt/lists/*
+# crash backtraces: qemu-arm -g <port> and gdb-multiarch (tools/arm32.sh gdb)
+RUN apt-get update && apt-get install -y --no-install-recommends gdb-multiarch && rm -rf /var/lib/apt/lists/*
